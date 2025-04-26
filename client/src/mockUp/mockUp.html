@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>MockUp PKEN Website</title>
+    <style>
+      /* --- 基本リセット --- */
+      *,
+      *::before,
+      *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+        font-family: "Helvetica Neue", "Yu Gothic", sans-serif;
+        background: #f5f7f9;
+        color: #333;
+        line-height: 1.6;
+      }
+
+      /* --- レイアウト --- */
+      body {
+        display: grid;
+        grid-template-rows: auto 1fr;
+        grid-template-areas: "header" "content";
+        min-height: 100svh;
+        overflow-x: hidden;
+      }
+
+      /* --- ヘッダー --- */
+      .site-header {
+        grid-area: header;
+        background: #40916c;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: fixed;
+        width: 100%;
+        z-index: 1000;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .site-header__title {
+        font-size: 1.6rem;
+        font-weight: bold;
+        letter-spacing: 0.05em;
+      }
+
+      .site-header__icons {
+        display: flex;
+        gap: 1.2rem;
+      }
+
+      /* --- アイコン共通 --- */
+      .site-header__icon {
+        width: 28px;
+        height: 28px;
+        background: white;
+        border-radius: 50%;
+        transition: background 0.3s;
+      }
+      .site-header__icon:hover {
+        background: #d9f7be;
+      }
+
+      .site-header__divider {
+        display: inline-block;
+        width: 1px;
+        height: 28px;
+        background: rgba(255, 255, 255, 0.5);
+      }
+      .site-header__features {
+        display: flex;
+        gap: 1rem;
+      }
+
+      /* --- コンテンツエリア --- */
+      .page-content {
+        grid-area: content;
+        display: grid;
+        grid-template-columns: 220px 1fr;
+        grid-template-areas: "sidebar main";
+        margin-top: 70px;
+      }
+
+      /* --- サイドバー --- */
+      .sidebar {
+        grid-area: sidebar;
+        background: #52b788;
+        color: #fff;
+        padding: 1.5rem 1rem;
+        position: fixed;
+        top: 70px;
+        bottom: 0;
+        overflow-y: auto;
+        width: 220px;
+        border-radius: 0 12px 12px 0;
+        box-shadow: 2px 0 6px rgba(0, 0, 0, 0.1);
+      }
+
+      .sidebar__list {
+        list-style: none;
+      }
+
+      .sidebar__item {
+        padding: 0.75rem;
+        margin-bottom: 0.5rem;
+        border-radius: 8px;
+        transition: background 0.3s, transform 0.2s;
+        cursor: pointer;
+      }
+
+      .sidebar__item:hover {
+        background: rgba(255, 255, 255, 0.15);
+        transform: translateX(4px);
+      }
+
+      .sidebar__item.is-active {
+        background: #74c69d;
+        font-weight: bold;
+        border-left: 4px solid #ffffff;
+      }
+
+      /* --- メインエリア --- */
+      .main {
+        grid-area: main;
+        margin-left: 220px;
+        padding: 2rem;
+        background: #fff;
+        border-radius: 12px 0 0 0;
+        box-shadow: -2px 0 6px rgba(0, 0, 0, 0.05);
+        min-height: calc(100vh - 70px);
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* --- メインナビゲーション --- */
+      .main__top-nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid #cce3de;
+      }
+
+      .main__top-nav--title {
+        font-size: 1.5rem;
+        font-weight: 600;
+      }
+
+      .main__top-nav--alert {
+        font-size: 1rem;
+        color: #40916c;
+        font-weight: bold;
+        animation: fadeInFromTop 0.5s ease-out forwards;
+      }
+
+      /* --- メインコンテンツ --- */
+      .main__contents {
+        flex-grow: 1;
+        background: #f8f9fa;
+        border-radius: 8px;
+        margin-top: 2rem;
+        padding: 2rem;
+        display: flex;
+        justify-content: center;
+        align-items: start;
+        font-size: 1.1rem;
+      }
+
+      /* --- モーダル --- */
+      .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.4);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 2000;
+      }
+
+      .modal {
+        background: #fff;
+        padding: 2rem;
+        border-radius: 16px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        width: 90%;
+        max-width: 420px;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+
+      .modal h2 {
+        font-size: 1.8rem;
+        text-align: center;
+        color: #40916c;
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      label {
+        font-size: 1rem;
+        color: #666;
+      }
+
+      input[type="email"],
+      input[type="password"] {
+        padding: 0.8rem;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.3s;
+      }
+
+      input:focus {
+        border-color: #40916c;
+        outline: none;
+      }
+
+      .login-button {
+        background: #40916c;
+        color: white;
+        font-size: 1.1rem;
+        padding: 0.75rem;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background 0.3s;
+      }
+
+      .login-button:hover {
+        background: #2d6a4f;
+      }
+
+      .close-button {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        color: #666;
+        cursor: pointer;
+        align-self: flex-end;
+      }
+
+      .forgot-password {
+        text-align: center;
+        font-size: 0.9rem;
+      }
+
+      .forgot-password a {
+        color: #40916c;
+        text-decoration: none;
+      }
+
+      .forgot-password a:hover {
+        text-decoration: underline;
+      }
+
+      /* --- アニメーション --- */
+      @keyframes fadeInFromTop {
+        from {
+          opacity: 0;
+          transform: translateY(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    </style>
+    <style>
+      /* --- 共通アニメーション --- */
+
+      /* フェードイン＋スライドアップ */
+      @keyframes fadeSlideUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* スケールアップ（拡大表示） */
+      @keyframes scaleUp {
+        from {
+          opacity: 0;
+          transform: scale(0.8);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      /* --- ページロード時エフェクト --- */
+      body.loaded .site-header,
+      body.loaded .sidebar,
+      body.loaded .main {
+        animation: fadeSlideUp 0.8s ease-out forwards;
+      }
+
+      /* --- アイコン・ボタンのホバーエフェクト --- */
+      .site-header__icon,
+      .login-button,
+      .close-button {
+        transition: transform 0.3s ease, background 0.3s ease;
+      }
+
+      .site-header__icon:hover,
+      .login-button:hover,
+      .close-button:hover {
+        transform: scale(1.1);
+      }
+
+      /* --- サイドバー項目のホバーエフェクト --- */
+      .sidebar__item {
+        transition: background 0.3s, transform 0.3s;
+      }
+
+      .sidebar__item:hover {
+        transform: translateX(6px);
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      /* --- モーダル開閉アニメーション --- */
+      .modal-overlay.show {
+        display: flex;
+      }
+
+      .modal {
+        animation: scaleUp 0.4s ease-out forwards;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- ヘッダー -->
+    <header class="site-header">
+      <div class="site-header__title">MockUp PKEN</div>
+      <div class="site-header__icons">
+        <div class="site-header__features">
+          <div class="site-header__icon"></div>
+          <div class="site-header__icon"></div>
+        </div>
+        <div class="site-header__divider"></div>
+        <div class="site-header__account">
+          <div class="site-header__icon" id="accountIcon"></div>
+        </div>
+      </div>
+    </header>
+    <div class="modal-overlay" id="modalOverlay">
+      <div class="modal">
+        <button class="close-button" id="closeModal">&times;</button>
+        <h2>ログイン</h2>
+        <form>
+          <div class="form-group">
+            <label for="email">メールアドレス</label>
+            <input type="email" id="email" name="email" required />
+          </div>
+          <div class="form-group">
+            <label for="password">パスワード</label>
+            <input type="password" id="password" name="password" required />
+          </div>
+          <button type="submit" class="login-button">ログイン</button>
+          <div class="forgot-password">
+            <a href="#">パスワードを忘れた場合はこちら</a>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- コンテンツ -->
+    <div class="page-content">
+      <!-- サイドバー -->
+      <aside class="sidebar">
+        <nav class="sidebar__nav">
+          <ul class="sidebar__list">
+            <li class="sidebar__item is-active">ホーム</li>
+            <li class="sidebar__item">研究会について</li>
+            <li class="sidebar__item">プロジェクト一覧</li>
+            <li class="sidebar__item">勉強会・イベント</li>
+            <li class="sidebar__item">メンバー紹介</li>
+            <li class="sidebar__item">お問い合わせ</li>
+          </ul>
+        </nav>
+      </aside>
+
+      <!-- メインエリア -->
+      <main class="main">
+        <div class="main__top-nav">
+          <div class="main__top-nav--title">ホーム（ダッシュボード）</div>
+          <div class="main__top-nav--alert">こんにちは、OOOさん！</div>
+        </div>
+
+        <div class="main__contents">
+          <section style="width: 100%; max-width: 900px">
+            <h2 style="margin-bottom: 1rem; font-size: 1.5rem">お知らせ</h2>
+            <ul style="margin-bottom: 2rem">
+              <li>📅 次回勉強会: 2025年5月10日(土) 14:00～</li>
+              <li>🚀 新プロジェクト「AIチャットボット開発」始動！</li>
+            </ul>
+
+            <h2 style="margin-bottom: 1rem; font-size: 1.5rem">
+              進行中プロジェクト
+            </h2>
+            <ul style="margin-bottom: 2rem">
+              <li>・Webアプリ「タスク管理ツール」開発</li>
+              <li>・IoTデバイスと連携する「センサー監視システム」</li>
+            </ul>
+
+            <h2 style="margin-bottom: 1rem; font-size: 1.5rem">最近の活動</h2>
+            <ul>
+              <li>・2025/04/15: ハッカソン成果発表会</li>
+              <li>・2025/04/05: 勉強会「Next.jsで作るモダンWebアプリ」</li>
+            </ul>
+          </section>
+        </div>
+      </main>
+    </div>
+  </body>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      document.body.classList.add("loaded");
+    });
+
+    // モーダル開閉時もスムーズな動きを付加
+    const accountIcon = document.getElementById("accountIcon");
+    const modalOverlay = document.getElementById("modalOverlay");
+    const closeModal = document.getElementById("closeModal");
+
+    accountIcon.addEventListener("click", () => {
+      modalOverlay.classList.add("show");
+    });
+
+    closeModal.addEventListener("click", () => {
+      modalOverlay.classList.remove("show");
+    });
+
+    window.addEventListener("click", (e) => {
+      if (e.target === modalOverlay) {
+        modalOverlay.classList.remove("show");
+      }
+    });
+  </script>
+</html>

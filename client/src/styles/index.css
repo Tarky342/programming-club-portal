@@ -1,0 +1,107 @@
+@import './root.css';
+
+/*----------------------------------------
+  Global Reset & Base Styles
+----------------------------------------*/
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-family: var(--font-base);
+  line-height: var(--line-height-base);
+  background-color: var(--color-white);
+  color: var(--color-black);
+  font-size: 16px;
+}
+
+body {
+  min-height: 100vh;
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+}
+
+/*----------------------------------------
+  Typography Utilities
+----------------------------------------*/
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-academic);
+  margin-bottom: var(--space-sm);
+}
+
+p {
+  margin-bottom: var(--space-sm);
+}
+
+/*----------------------------------------
+  Link Styling
+----------------------------------------*/
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: var(--motion-default);
+}
+a:hover {
+  text-decoration: underline;
+}
+
+/*----------------------------------------
+  Media Elements
+----------------------------------------*/
+img,
+video {
+  max-width: 100%;
+  display: block;
+}
+
+/*----------------------------------------
+  Buttons
+----------------------------------------*/
+button {
+  font: inherit;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  border: none;
+  cursor: pointer;
+  transition: var(--motion-default);
+}
+button:hover {
+  background-color: var(--color-primary-dark);
+}
+
+/*----------------------------------------
+  Atomic Component: Card
+----------------------------------------*/
+.card {
+  background: var(--color-white);
+  border-radius: var(--radius-md);
+  box-shadow: var(--elevation-2);
+  padding: var(--space-md);
+  transition: var(--motion-default);
+}
+.card:hover {
+  box-shadow: var(--elevation-8);
+}
+
+/*----------------------------------------
+  Accent Playful Elements
+----------------------------------------*/
+.accent-text {
+  color: var(--color-primary);
+  font-weight: bold;
+  animation: bounce 1s var(--motion-spring) infinite alternate;
+}
+
+@keyframes bounce {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-3px); }
+}
+
+
